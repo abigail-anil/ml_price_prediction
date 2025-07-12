@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Results</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #ddd;
+        }
+        .metrics {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predicted vs Actual Prices</h1>
+
+    <table>
+        <thead>
+            <tr>
+                {% for col in table.0.keys %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table %}
+                <tr>
+                    {% for val in row.values %}
+                        <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="metrics">
+        <h2>Performance Metrics</h2>
+        <ul>
+            {% for key, value in metrics.items %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
