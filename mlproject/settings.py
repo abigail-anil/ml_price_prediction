@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-(u1^9o16&5eslf=6*9j)z)!*!z$dzr_!o4+w%y3n&++w19@m29
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['e4611a6e813a40e0a01822d0b70968e5.vfs.cloud9.us-east-1.amazonaws.com']
+ALLOWED_HOSTS = ['e4611a6e813a40e0a01822d0b70968e5.vfs.cloud9.us-east-1.amazonaws.com',
+'.elasticbeanstalk.com', '127.0.0.1']
 
 
 # Application definition
@@ -127,6 +128,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
