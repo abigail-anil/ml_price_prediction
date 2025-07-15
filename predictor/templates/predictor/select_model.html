@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Select Model</title>
+</head>
+<body>
+<h1>Select a Machine Learning Model</h1>
+<form method="post">
+        {% csrf_token %}
+<label for="model">Choose a model:</label>
+<select name="model" id="model">
+<option value="lr">Linear Regression</option>
+<option value="knn">KNN</option>
+<option value="rf">Random Forest</option>
+<option value="xgb">XGBoost</option>
+</select>
+<button type="submit">Predict</button>
+</form>
+ 
+    {% if model_type %}
+<h2>Results for {{ model_type }} Model</h2>
+ 
+        <h3>Performance Metrics</h3>
+<ul>
+            {% for key, value in metrics.items %}
+<li>{{ key }}: {{ value }}</li>
+            {% endfor %}
+</ul>
+ 
+        <h3>Prediction Table</h3>
+<table border="1">
+<tr>
+<th>Actual Price</th>
+<th>Predicted Price</th>
+</tr>
+            {% for row in table %}
+<tr>
+<td>{{ row.Actual_Price }}</td>
+<td>{{ row.Predicted_Price }}</td>
+</tr>
+            {% endfor %}
+</table>
+ 
+        <h3>Prediction Plot</h3>
+<img src="/static/{{ plot_path }}" alt="Actual vs Predicted" width="500">
+    {% endif %}
+</body>
+</html>
