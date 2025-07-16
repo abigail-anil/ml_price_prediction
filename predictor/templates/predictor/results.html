@@ -1,175 +1,236 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Prediction Results</title>
-    {% load static %}
-<style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid #aaa;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #ddd;
-        }
-        .metrics {
-            font-family: sans-serif;
-        }
-</style>
+  <title>Prediction Results</title>
+  {% load static %}
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #ddd;
+    }
+    .metrics {
+      font-family: sans-serif;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<!-- Dropbox -->
+
+<!-- Dropdown Form -->
 <form method="POST">
-    {% csrf_token %}
-<label>Select a model:</label>
-<select name="model">
-<option value="" disabled selected>--- Select a model ---</option>
-<option value="linear" {% if selected_model == 'linear' %}selected{% endif %}>Linear Regression</option>
-<option value="knn" {% if selected_model == 'knn' %}selected{% endif %}>K-Nearest Neighbors</option>
-<option value="randomforest" {% if selected_model == 'randomforest' %}selected{% endif %}>Random Forest</option>
-<option value="xgboost" {% if selected_model == 'xgboost' %}selected{% endif %}>XGBoost</option>
-<option value="comparison" {% if selected_model == 'comparison' %}selected{% endif %}>Comparison</option>
-</select>
-<button type="submit">Run Prediction</button>
+  {% csrf_token %}
+  <label>Select a model:</label>
+  <select name="model">
+    <option value="" disabled selected>--- Select a model ---</option>
+    <option value="linear" {% if selected_model == 'linear' %}selected{% endif %}>Linear Regression</option>
+    <option value="knn" {% if selected_model == 'knn' %}selected{% endif %}>K-Nearest Neighbors</option>
+    <option value="randomforest" {% if selected_model == 'randomforest' %}selected{% endif %}>Random Forest</option>
+    <option value="xgboost" {% if selected_model == 'xgboost' %}selected{% endif %}>XGBoost</option>
+    <option value="comparison" {% if selected_model == 'comparison' %}selected{% endif %}>Comparison</option>
+  </select>
+  <button type="submit">Run Prediction</button>
 </form>
-    {% if table %}
-<h1>Performance Metrics</h1>
-<div class="metrics">
-<ul>
-            {% for key, value in metrics.items %}
-<li><strong>{{ key }}:</strong> {{ value }}</li>
-            {% endfor %}
-</ul>
-</div>
-<h2>Predicted vs Actual Prices</h2>
- 
-    <table>
-<thead>
-<tr>
-                {% for col in table.0.keys %}
-<th>{{ col }}</th>
-                {% endfor %}
-</tr>
-</thead>
-<tbody>
-            {% for row in table %}
-<tr>
-                    {% for val in row.values %}
-<td>{{ val }}</td>
-                    {% endfor %}
-</tr>
-            {% endfor %}
-</tbody>
-</table>
- 
- <h2>Top 5 Errors</h2>
- 
-    <table>
-<thead>
-<tr>
-          {% for col in top_errors.0.keys %}
-<th>{{ col }}</th>
-          {% endfor %}
-</tr>
-</thead>
-<tbody>
-        {% for row in top_errors %}
-<tr>
-            {% for val in row.values %}
-<td>{{ val }}</td>
-            {% endfor %}
-</tr>
+
+{% if table %}
+  <h1>Performance Metrics</h1>
+  <div class="metrics">
+    <ul>
+      {% for key, value in metrics.items %}
+        <li><strong>{{ key }}:</strong> {{ value }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <h2>Predicted vs Actual Prices</h2>
+  <table>
+    <thead>
+      <tr>
+        {% for col in table.0.keys %}
+          <th>{{ col }}</th>
         {% endfor %}
-</tbody>
-</table>
- 
- 
- 
- 
-    <!-- ✅ Chart.js  graph  area-->
-<h2>Prediction Chart</h2>
-<canvas id="priceChart" width="600" height="300"></canvas>
- 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-      const graphData = JSON.parse('{{ graph_data|safe }}');
- 
-      const ctx = document.getElementById('priceChart').getContext('2d');
-      const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: graphData.predicted.map((_, i) => i + 1),
-          datasets: [
-            {
-              label: 'Predicted Price',
-              data: graphData.predicted,
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 3,
-              pointRadius: 1,
-              fill: false,
-              tension: 0.1
-            },
-            {
-              label: 'Actual Price',
-              data: graphData.actual,
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1.5,
-              pointRadius: 3,
-              fill: false,
-              tension: 0.1
-            }
-          ]
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in table %}
+        <tr>
+          {% for val in row.values %}
+            <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Top 5 Errors</h2>
+  <table>
+    <thead>
+      <tr>
+        {% for col in top_errors.0.keys %}
+          <th>{{ col }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in top_errors %}
+        <tr>
+          {% for val in row.values %}
+            <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Prediction Chart</h2>
+  <canvas id="priceChart" width="600" height="300"></canvas>
+  <script>
+    const graphData = JSON.parse('{{ graph_data|safe }}');
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: graphData.predicted.map((_, i) => i + 1),
+        datasets: [
+          {
+            label: 'Predicted Price',
+            data: graphData.predicted,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 3,
+            pointRadius: 1,
+            fill: false,
+            tension: 0.1
+          },
+          {
+            label: 'Actual Price',
+            data: graphData.actual,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1.5,
+            pointRadius: 3,
+            fill: false,
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          title: {
+            display: true,
+            text: 'Predicted vs Actual Prices'
+          }
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top'
-            },
+        scales: {
+          x: {
             title: {
               display: true,
-              text: 'Predicted vs Actual Prices'
+              text: 'Sample Index'
             }
           },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Sample Index'
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Price'
-              }
+          y: {
+            title: {
+              display: true,
+              text: 'Price'
             }
           }
         }
-      });
-</script>
-<h2>Error Analysis</h2>
-<div style="display: flex; gap: 20px;">
-<!-- Residual Plot -->
-<div>
-<h3>Residual Plot</h3>
-<img src="{{ residual_plot }}" alt="Residual Plot" width="500">
-</div>
- 
-  <!-- Error Distribution -->
-<div>
-<h3>Error Distribution</h3>
-<img src="{{ error_dist_plot }}" alt="Error Distribution" width="500">
-</div>
-</div>
- 
+      }
+    });
+  </script>
+
+  <h2>Error Analysis</h2>
+  <div style="display: flex; gap: 20px;">
+    <div>
+      <h3>Residual Plot</h3>
+      <img src="{{ residual_plot }}" alt="Residual Plot" width="500">
+    </div>
+    <div>
+      <h3>Error Distribution</h3>
+      <img src="{{ error_dist_plot }}" alt="Error Distribution" width="500">
+    </div>
+  </div>
+{% endif %}
+
+{% if comparison_mode %}
+  <!-- Inject chart data for bar chart -->
+  <script id="chart-data" type="application/json">
+    {{ chart_data|safe }}
+  </script>
+
+  <h2>Model Comparison (MAE & R²)</h2>
+  <canvas id="barChart" width="600" height="300"></canvas>
+  <script>
+    const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: 'MAE (↓ better)',
+            data: chartData.mae,
+            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+          },
+          {
+            label: 'R² (↑ better)',
+            data: chartData.r2,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+
+  <h2>Model Comparison Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        {% for col in metrics_table.0.keys %}
+          <th>{{ col }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in metrics_table %}
+        <tr>
+          {% for val in row.values %}
+            <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 
-  {% endif %}
+
+  <h3>Model Performance Ranking (Based on {{ summary.metric_used }})</h3>
+<ol>
+  {% for model in summary.ranking_mae %}
+    <li>{{ model|title }}</li>
+  {% endfor %}
+</ol>
+
+{% endif %}
+
 </body>
 </html>
