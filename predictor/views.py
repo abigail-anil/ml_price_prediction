@@ -6,6 +6,7 @@ import os
 import time
 from sklearn.metrics import mean_absolute_error, r2_score
 import json # Visualization with Chart.js
+from django.conf import settings
 import matplotlib.pyplot as plt
  
 AWS_REGION = 'us-east-1'
@@ -93,7 +94,8 @@ def predict_from_demo(request):
         plt.grid(True)
         plt.tight_layout()
         error_dist_filename = 'error_dist.png'
-        error_dist_path = os.path.join('static', error_dist_filename)
+        error_dist_path = os.path.join(settings.MEDIA_ROOT, error_dist_filename)
+        os.makedirs(os.path.dirname(error_dist_path), exist_ok=True)
         plt.savefig(error_dist_path)
         plt.close()
     
@@ -120,7 +122,8 @@ def predict_from_demo(request):
         plt.ylabel('Residual (Actual - Predicted)')
         plt.tight_layout()
         plot_filename = "residual_plot.png"
-        plot_path = os.path.join('static', plot_filename)
+        plot_path = os.path.join(settings.MEDIA_ROOT, plot_filename)
+        os.makedirs(os.path.dirname(plot_path), exist_ok=True)
         plt.savefig(plot_path)
         plt.close()
 
@@ -129,8 +132,8 @@ def predict_from_demo(request):
             'metrics': metrics,
             'graph_data': graph_data,
             'top_errors': top_errors.to_dict(orient='records'),
-            'residual_plot': plot_filename,
-            'error_dist_plot': error_dist_filename,
+            'residual_plot': settings.MEDIA_URL + plot_filename,
+            'error_dist_plot': settings.MEDIA_URL + error_dist_filename,
             'selected_model': model_name
         })
  
